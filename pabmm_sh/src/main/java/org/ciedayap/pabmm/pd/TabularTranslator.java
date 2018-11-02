@@ -8,7 +8,6 @@ package org.ciedayap.pabmm.pd;
 import java.util.ArrayList;
 import org.ciedayap.pabmm.sh.DetectedAttributes;
 import org.ciedayap.cincamimisconversor.QueueException;
-import org.ciedayap.pabmm.pd.requirements.Attribute;
 
 /**
  * Given a CINCAMIPDQueue (Source) and the HAshMap for the attributes, It is responsible
