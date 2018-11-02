@@ -11,10 +11,12 @@ import info.debatty.java.stringsimilarity.JaroWinkler;
 import info.debatty.java.stringsimilarity.NormalizedLevenshtein;
 import info.debatty.java.stringsimilarity.SorensenDice;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import org.ciedayap.pabmm.pd.MeasurementProject;
 import org.ciedayap.pabmm.pd.requirements.Attribute;
 import org.ciedayap.pabmm.pd.requirements.Attributes;
 import org.ciedayap.utils.StringUtils;
@@ -447,5 +449,47 @@ public class DetectedAttributes implements Serializable{
      */
     public short getLastDistanceType() {
         return lastDistanceType;
+    }
+    
+    public Double structuralCoef(MeasurementProject prj1,MeasurementProject prj2,double threshold)
+    {
+        if(prj1==null || prj2==null) return 0.0;
+        if(prj1.getInfneed()==null || prj1.getInfneed().getSpecifiedEC()==null ||
+                prj1.getInfneed().getSpecifiedEC().getDescribedBy()==null) return 0.0;
+        if(prj1.getInfneed().getCharacterizedBy()==null ||
+                prj1.getInfneed().getCharacterizedBy().getDescribedBy()==null) return 0.0;
+        if(threshold<0 || threshold>1) return 0.0;
+        if(lastSimilarityMatrix==null) return 0.0;
+        
+        ArrayList lprj1=new ArrayList();
+        lprj1.addAll(prj1.getInfneed().getSpecifiedEC().getDescribedBy().getCharacteristics());
+        lprj1.addAll( prj1.getInfneed().getCharacterizedBy().getDescribedBy().getContextProperties());
+        ArrayList lprj2=new ArrayList();
+        lprj2.addAll(prj2.getInfneed().getSpecifiedEC().getDescribedBy().getCharacteristics());
+        lprj2.addAll( prj2.getInfneed().getCharacterizedBy().getDescribedBy().getContextProperties());
+        
+        int common=0;
+        for(Object aot1:lprj1)
+        {
+            Attribute at1=(Attribute)aot1;
+            boolean ready=false;
+            for(Object aot2:lprj2)
+            {
+                
+               Attribute at2=(Attribute)aot2;
+               int posat1=getPosition(at1.getID());
+               int posat2=getPosition(at2.getID());
+               
+               double cmp=this.lastSimilarityMatrix.get(posat1, posat2);
+
+               if(!ready && cmp>=threshold)
+               {                              
+                common++;               
+                ready=true;
+               }
+            }
+        }                
+        
+        return ((double)common/(double)(lprj1.size()+lprj2.size()-common));
     }
 }

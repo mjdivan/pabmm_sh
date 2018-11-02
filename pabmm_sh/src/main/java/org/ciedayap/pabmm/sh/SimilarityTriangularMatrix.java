@@ -5,6 +5,8 @@
  */
 package org.ciedayap.pabmm.sh;
 
+import java.util.ArrayList;
+
 /**
  * It implements a similarity triangular matrix using unidimensional mapping to an array of doubles
  * in place of the bidimensional matrix for optimizing the use of the required memory.,
@@ -127,6 +129,22 @@ public class SimilarityTriangularMatrix {
         if(position<0 || position>=umatrix.length) return null; 
         
         return umatrix[position];
+    }
+    
+    /**
+     * It returns the vector related with the indicated row
+     * @param row The row 
+     * @return The vector related to the row into the matrix, null otherwise
+     */
+    public synchronized ArrayList<Double> getRow(int row)
+    {
+        if(row<0 || row>=getDim()) return null;
+        
+        ArrayList<Double> ret=new ArrayList();
+        for(int i=0;i<dim;i++)
+            ret.add(get(row,i));
+        
+        return ret;
     }
     
     /**
